@@ -15,50 +15,49 @@ const ShopPreview: React.FC = () => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    const fetchEbayProducts = async () => {
-      try {
-        // We use a CORS proxy to bypass browser restrictions for client-side scraping
-        const ebayUrl = 'https://www.ebay.it/sch/i.html?_ssn=deburr_it&_ipg=4';
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(ebayUrl)}`;
-        
-        const response = await fetch(proxyUrl);
-        const data = await response.json();
-        
-        if (!data.contents) throw new Error("No data received");
+   const fetchEbayProducts = async () => {
+  try {
+    const feedUrl = 'https://www.ebay.it/sch/deburr_it/m.html?_rss=1';
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`;
 
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(data.contents, 'text/html');
-        
-        // Select items from eBay's DOM structure (s-item)
-        const items = Array.from(doc.querySelectorAll('.s-item__wrapper')).slice(1, 5); // Slice 1 to skip "Shop on eBay" header item if present
-        
-        const scrapedProducts: Product[] = items.map((item, index) => {
-          const titleEl = item.querySelector('.s-item__title');
-          const priceEl = item.querySelector('.s-item__price');
-          const imgEl = item.querySelector('.s-item__image-img');
-          const linkEl = item.querySelector('.s-item__link');
+    const response = await fetch(proxyUrl);
+    const data = await response.json();
 
-          return {
-            id: `prod-${index}`,
-            title: titleEl?.textContent || 'Prodotto Deburr',
-            price: priceEl?.textContent || 'Vedi Prezzo',
-            image: imgEl?.getAttribute('src') || 'https://picsum.photos/400/400?grayscale',
-            link: linkEl?.getAttribute('href') || 'https://www.ebay.it/str/deburrit'
-          };
-        }).filter(p => p.title !== 'Shop on eBay'); // Filter out potential ads
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(data.contents, 'text/xml');
+    const items = Array.from(xml.querySelectorAll('item')).slice(0, 4);
 
-        if (scrapedProducts.length > 0) {
-          setProducts(scrapedProducts);
-        } else {
-          setError(true);
-        }
-      } catch (err) {
-        console.error("Error scraping eBay:", err);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const scrapedProducts: Product[] = items.map((item, index) => {
+      const title = item.querySelector('title')?.textContent || 'Prodotto Deburr';
+      const link = item.querySelector('link')?.textContent || 'https://www.ebay.it/str/deburrit';
+      const description = item.querySelector('description')?.textContent || '';
+      const imgMatch = description.match(/<img src="(.*?)"/);
+      const image = imgMatch ? imgMatch[1] : 'https://picsum.photos/400/400?grayscale';
+      const priceMatch = description.match(/EUR\s[\d.,]+/);
+      const price = priceMatch ? priceMatch[0] : 'Vedi Prezzo';
+
+      return {
+        id: `prod-${index}`,
+        title,
+        price,
+        image,
+        link
+      };
+    });
+
+    if (scrapedProducts.length > 0) {
+      setProducts(scrapedProducts);
+    } else {
+      setError(true);
+    }
+  } catch (err) {
+    console.error("Errore nel caricamento RSS:", err);
+    setError(true);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
     fetchEbayProducts();
   }, []);
