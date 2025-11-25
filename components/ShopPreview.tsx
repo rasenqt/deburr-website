@@ -15,73 +15,77 @@ const ShopPreview: React.FC = () => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-   const fetchEbayProducts = async () => {
-  try {
-    const feedUrl = 'https://www.ebay.it/sch/deburr_it/m.html?_rss=1';
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`;
+    const fetchEbayProducts = async () => {
+      try {
+        const rssFeed = 'https://www.ebay.it/sch/deburr_it/m.html?_rss=1';
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssFeed)}`;
 
-    const response = await fetch(proxyUrl);
-    const data = await response.json();
+        const response = await fetch(proxyUrl);
+        const data = await response.json();
 
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(data.contents, 'text/xml');
-    const items = Array.from(xml.querySelectorAll('item')).slice(0, 4);
+        if (!data.contents) throw new Error('Nessun contenuto ricevuto');
 
-    const scrapedProducts: Product[] = items.map((item, index) => {
-      const title = item.querySelector('title')?.textContent || 'Prodotto Deburr';
-      const link = item.querySelector('link')?.textContent || 'https://www.ebay.it/str/deburrit';
-      const description = item.querySelector('description')?.textContent || '';
-      const imgMatch = description.match(/<img src="(.*?)"/);
-      const image = imgMatch ? imgMatch[1] : 'https://picsum.photos/400/400?grayscale';
-      const priceMatch = description.match(/EUR\s[\d.,]+/);
-      const price = priceMatch ? priceMatch[0] : 'Vedi Prezzo';
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(data.contents, 'text/xml');
+        const items = Array.from(xml.querySelectorAll('item')).slice(0, 4);
 
-      return {
-        id: `prod-${index}`,
-        title,
-        price,
-        image,
-        link
-      };
-    });
+        const scrapedProducts: Product[] = items.map((item, index) => {
+          const title = item.querySelector('title')?.textContent || 'Prodotto Deburr';
+          const link = item.querySelector('link')?.textContent || 'https://www.ebay.it/str/deburrit';
+          const description = item.querySelector('description')?.textContent || '';
 
-    if (scrapedProducts.length > 0) {
-      setProducts(scrapedProducts);
-    } else {
-      setError(true);
-    }
-  } catch (err) {
-    console.error("Errore nel caricamento RSS:", err);
-    setError(true);
-  } finally {
-    setLoading(false);
-  }
-};
+          // Regex per immagine e prezzo dal contenuto HTML
+          const imageMatch = description.match(/<img src="([^"]+)"/);
+          const image = imageMatch ? imageMatch[1] : 'https://picsum.photos/400/400?grayscale';
 
+          const priceMatch = description.match(/EUR\s[\d.,]+/);
+          const price = priceMatch ? priceMatch[0] : 'Vedi Prezzo';
+
+          return {
+            id: `prod-${index}`,
+            title,
+            price,
+            image,
+            link,
+          };
+        });
+
+        if (scrapedProducts.length > 0) {
+          setProducts(scrapedProducts);
+        } else {
+          setError(true);
+        }
+      } catch (err) {
+        console.error('Errore caricamento RSS eBay:', err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchEbayProducts();
   }, []);
 
   return (
     <section className="py-24 bg-slate-950 relative overflow-hidden">
-      {/* Decorative background */}
-      <div className="absolute top-0 right-0 w-1/3 h-full bg-orange-600/5 -skew-x-12 pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-1/3 h-full bg-orange-600/5 -skew-x-12 pointer-events-none" />
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <div>
-            <span className="text-orange-500 font-bold tracking-wider uppercase text-sm mb-2 block">Il Nostro Shop</span>
-            <h2 className="text-3xl md:text-5xl font-bold text-white">
-              Prodotti in Evidenza
-            </h2>
+            <span className="text-orange-500 font-bold tracking-wider uppercase text-sm mb-2 block">
+              Il Nostro Shop
+            </span>
+            <h2 className="text-3xl md:text-5xl font-bold text-white">Prodotti in Evidenza</h2>
           </div>
-          <a 
-            href="https://www.ebay.it/sch/i.html?_dkr=1&iconV2Request=true&_blrs=recall_filtering&_ssn=deburr_it&_oac=1"
+          <a
+            href="https://www.ebay.it/str/deburrit"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-full transition-all group"
           >
-            Vedi tutto su eBay <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            Vedi tutto su eBay{' '}
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>
         </div>
 
@@ -97,8 +101,8 @@ const ShopPreview: React.FC = () => {
             <p className="text-slate-400 mb-6">
               Non siamo riusciti a recuperare gli ultimi prodotti direttamente da eBay in questo momento.
             </p>
-            <a 
-              href="https://www.ebay.it/sch/i.html?_dkr=1&iconV2Request=true&_blrs=recall_filtering&_ssn=deburr_it&_oac=1"
+            <a
+              href="https://www.ebay.it/str/deburrit"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-orange-500 font-bold hover:text-orange-400 transition-colors"
@@ -109,20 +113,21 @@ const ShopPreview: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {products.map((product) => (
-              <a 
+              <a
                 key={product.id}
                 href={product.link}
                 target="_blank"
-                rel="noopener noreferrer" 
+                rel="noopener noreferrer"
                 className="group bg-slate-900 rounded-xl overflow-hidden border border-slate-800 hover:border-orange-500 transition-all hover:shadow-xl hover:shadow-orange-900/20 flex flex-col h-full"
               >
                 <div className="aspect-square overflow-hidden relative bg-slate-800">
-                  <img 
-                    src={product.image} 
-                    alt={product.title} 
+                  <img
+                    src={product.image}
+                    alt={product.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://picsum.photos/400/400?grayscale&blur=2'; // Fallback
+                      (e.target as HTMLImageElement).src =
+                        'https://picsum.photos/400/400?grayscale&blur=2';
                     }}
                   />
                   <div className="absolute top-3 left-3 bg-orange-600 text-xs font-bold text-white px-2 py-1 rounded shadow-lg">
