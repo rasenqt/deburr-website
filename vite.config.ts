@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // IMPORTANTE: Sostituisci 'nome-tua-repository' con il nome esatto della tua repository GitHub
-  // Esempio: se la repo è 'deburr-sito', scrivi: base: '/deburr-sito/',
-  base: '/nome-tua-repository/', 
+  // Impostando './' il sito funzionerà su qualsiasi repository GitHub 
+  // senza bisogno di specificare il nome esatto.
+  base: './', 
 });
