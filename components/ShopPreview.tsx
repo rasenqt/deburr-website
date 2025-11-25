@@ -16,8 +16,8 @@ const ShopPreview: React.FC = () => {
       id: 'prod-1',
       title: 'Kit Convogliatori Aria Freni - Carbon Nylon',
       price: '€ 45,00',
-      // Car part detail
-      image: 'https://images.unsplash.com/photo-1600180486667-16782c5890c0?auto=format&fit=crop&w=600&q=80', 
+      // Carbon fiber / technical part
+      image: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=600&q=80', 
       link: 'https://www.ebay.it/str/deburrit'
     },
     {
@@ -33,14 +33,14 @@ const ShopPreview: React.FC = () => {
       title: 'Protezione Carter Frizione - TPU Rinforzato',
       price: '€ 28,00',
       // Mechanical engine part
-      image: 'https://images.unsplash.com/photo-1580273916550-e323be2ebdd9?auto=format&fit=crop&w=600&q=80',
+      image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=600&q=80',
       link: 'https://www.ebay.it/str/deburrit'
     },
     {
       id: 'prod-4',
       title: 'Servizio Stampa 3D On-Demand - Invia File',
       price: 'Preventivo',
-      // 3D printed object
+      // 3D printer
       image: 'https://images.unsplash.com/photo-1616789578278-654e99f5d137?auto=format&fit=crop&w=600&q=80',
       link: 'https://www.ebay.it/str/deburrit'
     }

@@ -8,28 +8,28 @@ const services: ServiceItem[] = [
     title: 'Additive Manufacturing',
     description: 'Produzione su misura con tecnologie avanzate. Dai polimeri ad alte prestazioni ai metalli.',
     icon: Layers,
-    image: 'https://images.unsplash.com/photo-1623938686942-038ba986dc57?auto=format&fit=crop&w=800&q=80' // 3D Printer nozzle/action close up
+    image: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?auto=format&fit=crop&w=800&q=80' // Industrial manufacturing machine
   },
   {
     id: 'scanning',
     title: 'Scansione 3D',
     description: 'Digitalizzazione ultra precisa per controllo qualità e acquisizione geometrie complesse.',
     icon: Scan,
-    image: 'https://images.unsplash.com/photo-1517420704952-d9f39e95b43e?auto=format&fit=crop&w=800&q=80' // Digital/Tech mesh visualization
+    image: 'https://images.unsplash.com/photo-1618331835717-801e976710b2?auto=format&fit=crop&w=800&q=80' // Abstract laser grid/scan
   },
   {
     id: 'reverse',
     title: 'Reverse Engineering',
     description: 'Ricostruzione di parti uniche o obsolete partendo dall\'oggetto fisico.',
     icon: RefreshCcw,
-    image: 'https://images.unsplash.com/photo-1581094794329-cd1096d7a43f?auto=format&fit=crop&w=800&q=80' // Blueprint/CAD/Technical drawing
+    image: 'https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=800&q=80' // Technical blueprint close up
   },
   {
     id: 'motorsport',
     title: 'Motorsport Solutions',
     description: 'Soluzioni dedicate per il racing: leggerezza, resistenza e aerodinamica.',
     icon: Flag,
-    image: 'https://images.unsplash.com/photo-1591461942548-c89b88e14674?auto=format&fit=crop&w=800&q=80' // KTM Motocross bike
+    image: 'https://images.unsplash.com/photo-1558981806-ec527fa84c3d?auto=format&fit=crop&w=800&q=80' // Motocross bike action
   }
 ];
 
@@ -43,7 +43,7 @@ const Services: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {services.map((service, index) => (
+          {services.map((service) => (
             <div key={service.id} className="group relative bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 hover:border-orange-500/50 transition-all duration-300 hover:shadow-2xl hover:shadow-orange-900/20">
               <div className="h-48 overflow-hidden relative">
                 <div className="absolute inset-0 bg-slate-900/40 group-hover:bg-transparent transition-colors z-10"></div>
@@ -51,6 +51,9 @@ const Services: React.FC = () => {
                   src={service.image} 
                   alt={service.title} 
                   className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" 
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80';
+                  }}
                 />
                 <div className="absolute top-4 right-4 bg-orange-600 p-2 rounded-lg z-20 shadow-lg">
                   <service.icon className="text-white w-6 h-6" />
